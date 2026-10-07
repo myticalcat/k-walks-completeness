@@ -18,6 +18,8 @@ For K = 1, both EXACT-K and ATMOST-K are HAMILTONIAN PATH. For K ≥ 2, each red
 
 The proofs are below. `walks.py` checks both reductions exhaustively on every small graph, and no counterexample turned up.
 
+The closed-walk versions of both problems are classical. They were proved NP-complete in 1990 by reduction from HAMILTONIAN CYCLE [BG90, JW90]. [JW90] use the same leaf gadget, and [LSW24] the same triangle gadget. What this note adds is the open-walk versions, which reduce from HAMILTONIAN PATH. The extra work is handling walks that start or end inside a gadget. See *Related work*.
+
 ## Why a gadget is needed
 
 On the raw graph, neither problem is the same as HAMILTONIAN PATH:
@@ -127,10 +129,30 @@ The graph G′ has n + 2(K−1)n vertices, so the reduction is polynomial for ev
 
 ## Remarks
 
-- **Lexicographic products.** EXACT-K on G is the same problem as HAMILTONIAN PATH on G[K̄_K], the graph in which every vertex becomes K non-adjacent copies. Label the i-th visit to v with the i-th copy. So HAMILTONIAN PATH stays NP-complete on graphs of the form G[K̄_K].
-- **Closed walks.** Count the visits of a closed walk cyclically, so its shared start and end is one visit, not two. Then every deficit is 0, and the same triangle gadget reduces HAMILTONIAN CYCLE on graphs with n ≥ 3 to the closed version of EXACT-K. This is case (c): H_G is connected with every degree 2. For n ≥ 3 that makes H_G a Hamiltonian cycle, because a doubled edge would use up the degree of both its ends and form a 2-vertex component. Graphs with n ≤ 2 have no Hamiltonian cycle, and the reduction maps them to a fixed no-instance. (Without that special case, K₂ breaks the reduction: case (c) gives a doubled edge.) `walks.py` does not check this.
-- **Large K.** ATMOST-K is easy once K ≥ n − 1. For n ≥ 2, take a spanning tree T, walk around it from any vertex, and stop just before the final return to the start. This walk visits each vertex v exactly deg_T(v) ≤ n − 1 times, so the question becomes "is G connected?". Hardness needs K to be a fixed constant, or at least K < n − 1.
-- **Walks only.** These results are for walks. If edges may not repeat (trails), both gadgets break: a leaf forces its edge to be used twice, and a triangle reuses ab. The trail versions are not covered here.
+- **Lexicographic products.** EXACT-K on G is the same problem as HAMILTONIAN PATH on G[K̄_K], the graph in which every vertex becomes K non-adjacent copies. Label the i-th visit to v with the i-th copy. So HAMILTONIAN PATH stays NP-complete on graphs of the form G[K̄_K]. [JW90] state the closed-walk version: for K ≥ 2, G has a closed walk visiting every vertex exactly K times if and only if G[K̄_K] has a Hamiltonian cycle.
+- **Closed walks.** The closed versions of both problems are the classical ones. Their NP-completeness is due to [BG90] and [JW90, Theorem 6.1], and [LSW24, Lemma 1] give this triangle reduction. Here is how the proof above adapts. Count the visits of a closed walk cyclically, so its shared start and end is one visit, not two. Then every deficit is 0, and the same triangle gadget reduces HAMILTONIAN CYCLE on graphs with n ≥ 3 to the closed version of EXACT-K. This is case (c): H_G is connected with every degree 2. For n ≥ 3 that makes H_G a Hamiltonian cycle, because a doubled edge would use up the degree of both its ends and form a 2-vertex component. Graphs with n ≤ 2 have no Hamiltonian cycle, and the reduction maps them to a fixed no-instance. (Without that special case, K₂ breaks the reduction: case (c) gives a doubled edge.) `walks.py` does not check this.
+- **Large K.** ATMOST-K is easy once K ≥ Δ(G), the maximum degree of G. For n ≥ 2, take a spanning tree T, walk around it from any vertex, and stop just before the final return to the start. This walk visits each vertex v exactly deg_T(v) ≤ Δ(G) times, so the question becomes "is G connected?". Hardness needs K to be a fixed constant, or at least K < Δ(G). [JW90, Lemma 2.2] use the same spanning-tree argument for closed walks. For closed walks the threshold is tight: on graphs of maximum degree d, the closed version of ATMOST-K is NP-hard for every K < d [LSW24, Theorem 2].
+- **Walks only.** These results are for walks. If edges may not repeat (trails), both gadgets break: a leaf forces its edge to be used twice, and a triangle reuses ab. The closed EXACT-K trail version is nevertheless known to be NP-complete. A closed trail that visits every vertex exactly K times is an Euler circuit of a connected 2K-regular spanning subgraph, and deciding whether a graph has a connected d-regular spanning subgraph is NP-complete for every fixed d ≥ 2 [CC90]. The open and at-most-K trail versions are not covered here.
+
+## Related work
+
+- **Closed walks.** Broersma and Göbel [BG90] introduced both closed-walk problems and proved them NP-complete for every fixed K. Jackson and Wormald [JW90] call a closed walk that visits every vertex at most K times a *K-walk*, or an *exact K-walk* if it visits every vertex exactly K times. Their Theorem 6.1 keeps both problems NP-complete on j-connected graphs for every fixed j. For j = 1 their construction attaches K−1 pendant leaves to every vertex. Liu, Sheffield and Westover [LSW24, Lemma 1, credited to BG90] reduce with K−1 pendant triangles. They also classify exactly when the closed problems are hard on graphs of bounded degree.
+- **Edge multiplicities.** [JW90] define (exact) K-walks as connected spanning sub-multigraphs with prescribed degrees, which is the key lemma for closed walks. The open form, with degree 2r(v) − 1 at the two ends, appears in the many-visits TSP literature [BMV20]. That literature describes solutions by edge multiplicities so that running times can be polynomial in log K [CP84]. For the same reason, multiplicities are a polynomial certificate when K is given in binary.
+- **Exercises.** The K = 2 closed cases are standard exercises [Eri19, Ch. 12]. Published solutions use a pendant triangle for the exactly-twice version [CS374]. For the at-most-twice version, they use a pendant triangle or a pendant leaf [MIT6890].
+
+We did not find the open-walk versions stated in these sources. However, we have not seen the full text of [BG90]. [JW90] cite its preprint as "k-traceable graphs", so it may cover open walks too.
+
+**References**
+
+- [BG90] H. J. Broersma and F. Göbel. k-traversable graphs. *Ars Combinatoria* 29A (1990), 141–153. [zbMATH 0722.05045](https://zbmath.org/?q=an:0722.05045)
+- [JW90] B. Jackson and N. C. Wormald. k-walks of graphs. *Australasian Journal of Combinatorics* 2 (1990), 135–146. [PDF](https://ajc.maths.uq.edu.au/pdf/2/ocr-ajc-v2-p135.pdf)
+- [LSW24] B. Liu, N. S. Sheffield and A. Westover. Complexity of multiple-Hamiltonicity in graphs of bounded degree. [arXiv:2405.16270](https://arxiv.org/abs/2405.16270) (2024).
+- [BMV20] K. Bérczi, M. Mnich and R. Vincze. A 3/2-approximation for the metric many-visits path TSP. [EGRES Technical Report TR-2020-19](https://egres.elte.hu/tr/egres-20-19.pdf) (2020).
+- [CP84] S. S. Cosmadakis and C. H. Papadimitriou. The traveling salesman problem with many visits to few cities. *SIAM Journal on Computing* 13(1) (1984), 99–108.
+- [CC90] F. Cheah and D. G. Corneil. The complexity of regular subgraph recognition. *Discrete Applied Mathematics* 27 (1990), 59–68.
+- [Eri19] J. Erickson. *Algorithms* (2019), [Chapter 12: NP-hardness](https://jeffe.cs.illinois.edu/teaching/algorithms/book/12-nphard.pdf).
+- [CS374] UIUC CS/ECE 374, Spring 2017, [Homework 10](https://courses.grainger.illinois.edu/cs374/sp2017/homework/hw10.pdf), solved problem 4.
+- [MIT6890] MIT 6.890, Fall 2014, [Problem Set 3 solutions](https://courses.csail.mit.edu/6.890/fall14/psets/ps3-solutions.pdf), problem 1(a).
 
 ## Verification (`walks.py`)
 
