@@ -85,7 +85,7 @@ The detour visits a K times and b K times, and uses edge ab 2K−1 times. With K
 
 - Then m(va) = 2K − ε(a) − x and m(vb) = 2K − ε(b) − x.
 - The triangle *absorbs* α = m(va) + m(vb) = 4K − ε(a) − ε(b) − 2x of v's degree.
-- H is connected, so α ≥ 1. α has the parity of ε(a) + ε(b), so α ≥ 2 unless exactly one of a, b is an end of the walk.
+- H is connected, so α ≥ 1. α has the parity of ε(a) + ε(b), so α ≥ 2 unless ε(a) + ε(b) is odd.
 
 Let g(v) be the degree of v along edges of G, and let D_v be the total deficit at v and its triangles.
 
@@ -104,7 +104,12 @@ The deficits sum to 2 over all hubs, which leaves these cases:
 | D_v = 2, at v itself | impossible (g(v) ≤ 0) |
 | D_v = 2, any other split | 2 |
 
-So the G-edges of H form a connected spanning multigraph H_G of G. Every degree in H_G is 2, apart from one of these exceptions:
+Let H_G be the multigraph formed by the G-edges of H.
+
+- H_G spans G, because g(v) ≥ 1 for every v.
+- H_G is connected. Each triangle meets the rest of H only at its hub, so a path in H between two vertices of G that enters a triangle must leave it through the same hub, and that detour can be cut out.
+
+By the table, every degree in H_G is 2, apart from one of these exceptions:
 
 - **(a)** two vertices with degree 1 or 3;
 - **(b)** one vertex with degree 4;
@@ -123,8 +128,8 @@ The graph G′ has n + 2(K−1)n vertices, so the reduction is polynomial for ev
 ## Remarks
 
 - **Lexicographic products.** EXACT-K on G is the same problem as HAMILTONIAN PATH on G[K̄_K], the graph in which every vertex becomes K non-adjacent copies. Label the i-th visit to v with the i-th copy. So HAMILTONIAN PATH stays NP-complete on graphs of the form G[K̄_K].
-- **Closed walks.** The same triangle gadget reduces HAMILTONIAN CYCLE to the closed version of EXACT-K: this is case (c) with no end deficits. `walks.py` does not check this.
-- **Large K.** ATMOST-K is easy once K ≥ n: a tour of any spanning tree visits each vertex at most n times, so the question becomes "is G connected?". Hardness needs K to be a fixed constant, or at least K < n.
+- **Closed walks.** Count the visits of a closed walk cyclically, so its shared start and end is one visit, not two. Then every deficit is 0, and the same triangle gadget reduces HAMILTONIAN CYCLE on graphs with n ≥ 3 to the closed version of EXACT-K. This is case (c): H_G is connected with every degree 2. For n ≥ 3 that makes H_G a Hamiltonian cycle, because a doubled edge would use up the degree of both its ends and form a 2-vertex component. Graphs with n ≤ 2 have no Hamiltonian cycle, and the reduction maps them to a fixed no-instance. (Without that special case, K₂ breaks the reduction: case (c) gives a doubled edge.) `walks.py` does not check this.
+- **Large K.** ATMOST-K is easy once K ≥ n − 1. For n ≥ 2, take a spanning tree T, walk around it from any vertex, and stop just before the final return to the start. This walk visits each vertex v exactly deg_T(v) ≤ n − 1 times, so the question becomes "is G connected?". Hardness needs K to be a fixed constant, or at least K < n − 1.
 - **Walks only.** These results are for walks. If edges may not repeat (trails), both gadgets break: a leaf forces its edge to be used twice, and a triangle reuses ab. The trail versions are not covered here.
 
 ## Verification (`walks.py`)
